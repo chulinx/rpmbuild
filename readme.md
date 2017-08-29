@@ -1,4 +1,4 @@
-####自己编写测试过的spec
+#### 自己编写测试过的spec
 - 打包工具安装
 ```bash
 yum -y install rpm-build
