@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# chkconfig: 2345 55 25
+# description: startup script for tomcat on linux
+. /etc/rc.d/init.d/functions
+
+export JAVA_HOME=/usr/java/default
+TOMCAT_HOME=/usr/local/tomcat
+start_tomcat=$TOMCAT_HOME/bin/startup.sh
+stop_tomcat=$TOMCAT_HOME/bin/shutdown.sh
+tomcat_user=mds
+
+start() {
+   RID=`id -u` >/dev/null 2>&1
+   if [ "$RID" == "0" ];then
+     su -l $tomcat_user -c "${start_tomcat} >/dev/null 2>&1" 
+     [ "$?" -eq 0 ] && success  || failure
+     echo  "Starting tomcat..."
+   else
+     ${start_tomcat} >/dev/null 2>&1 
+     [ "$?" -eq 0 ] && success  || failure
+     echo  "Starting tomcat..."
+   fi
+}
+stop() {
+    ${stop_tomcat} >/dev/null 2>&1
+     [ "$?" -eq 0 ] && success  || failure
+    echo "Shutdown tomcat..."
+}
+status() {
+
+     ps -ef |grep tomcat|grep -v grep >/dev/null 2>&1
+     [ "$?" -eq 0 ] && success  || failure
+     echo "tomcat running status...."
+}
+#how we were called
+case "$1" in
+    start)
+        start
+        ;;
+    stop)
+        stop
+        ;;
+    restart)
+        stop
+        sleep 5
+        start
+        ;;
+    status)
+      status
+    ;;
+    *)
+        echo "Usage: $0 {start|stop|status|restart}"
+esac
